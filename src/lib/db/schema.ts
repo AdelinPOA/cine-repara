@@ -169,6 +169,48 @@ export interface ReviewImage {
 }
 
 // =====================================================
+// DASHBOARD FEATURE TYPES
+// =====================================================
+
+export interface CustomerFavorite {
+  id: number;
+  customer_id: string;
+  installer_profile_id: string;
+  created_at: Date;
+}
+
+export interface CustomerFavoriteInsert extends Omit<CustomerFavorite, 'id' | 'created_at'> {}
+
+export type ViewSource = 'direct' | 'search' | 'category' | 'referral';
+
+export interface CustomerSearchHistory {
+  id: number;
+  customer_id: string;
+  search_query: string | null;
+  service_category_id: number | null;
+  city_id: number | null;
+  region_id: number | null;
+  results_count: number;
+  created_at: Date;
+}
+
+export interface CustomerSearchHistoryInsert extends Omit<CustomerSearchHistory, 'id' | 'created_at' | 'results_count'> {
+  results_count?: number;
+}
+
+export interface InstallerProfileView {
+  id: number;
+  installer_profile_id: string;
+  viewer_id: string | null;
+  view_source: ViewSource;
+  created_at: Date;
+}
+
+export interface InstallerProfileViewInsert extends Omit<InstallerProfileView, 'id' | 'created_at' | 'view_source'> {
+  view_source?: ViewSource;
+}
+
+// =====================================================
 // NEXTAUTH TYPES
 // =====================================================
 
@@ -246,4 +288,21 @@ export interface ReviewWithAuthor extends Review {
 
 export interface CityWithRegion extends City {
   region: Region;
+}
+
+export interface CustomerFavoriteWithInstaller extends CustomerFavorite {
+  installer_name: string;
+  installer_business_name: string | null;
+  installer_avatar: string | null;
+  installer_verified: boolean;
+  installer_rating: number;
+  installer_review_count: number;
+  primary_service: string | null;
+  service_area_count: number;
+}
+
+export interface CustomerSearchHistoryWithDetails extends CustomerSearchHistory {
+  service_name: string | null;
+  city_name: string | null;
+  region_name: string | null;
 }

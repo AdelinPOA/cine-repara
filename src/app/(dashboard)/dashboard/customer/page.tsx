@@ -1,8 +1,8 @@
 import { auth } from '@/lib/auth';
 import { QuickSearchCard } from '@/components/customer/QuickSearchCard';
 import { CustomerReviewsList } from '@/components/customer/CustomerReviewsList';
-import { FavoritesPlaceholder } from '@/components/customer/FavoritesPlaceholder';
-import { SearchHistoryPlaceholder } from '@/components/customer/SearchHistoryPlaceholder';
+import { FavoritesList } from '@/components/customer/FavoritesList';
+import { SearchHistoryList } from '@/components/customer/SearchHistoryList';
 
 export default async function CustomerDashboardPage() {
   const session = await auth();
@@ -29,11 +29,11 @@ export default async function CustomerDashboardPage() {
       {/* Two-column layout - Reviews and Favorites */}
       <div className="grid lg:grid-cols-2 gap-6">
         <CustomerReviewsList customerId={session.user.id} limit={10} />
-        <FavoritesPlaceholder />
+        <FavoritesList customerId={session.user.id} limit={10} />
       </div>
 
       {/* Search History - Full Width */}
-      <SearchHistoryPlaceholder />
+      <SearchHistoryList customerId={session.user.id} limit={10} />
     </div>
   );
 }

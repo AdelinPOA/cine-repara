@@ -79,6 +79,15 @@ export default async function InstallerDashboardPage() {
     `,
   ]);
 
+  // Count total profile views
+  const viewsResult = await sql`
+    SELECT COUNT(*) as total
+    FROM installer_profile_views
+    WHERE installer_profile_id = ${installer.id}
+  `;
+
+  const profileViews = parseInt(viewsResult.rows[0]?.total || '0', 10);
+
   const installerWithDetails: InstallerWithDetails = {
     ...installer,
     services: servicesResult.rows,
@@ -100,7 +109,7 @@ export default async function InstallerDashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <InstallerDashboardStats installer={installer} profileViews={null} />
+      <InstallerDashboardStats installer={installer} profileViews={profileViews} />
 
       {/* Two-column layout */}
       <div className="grid lg:grid-cols-2 gap-6">

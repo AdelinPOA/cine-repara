@@ -3,6 +3,7 @@ import { FilterPanel } from '@/components/search/FilterPanel';
 import { InstallerCard } from '@/components/installer/InstallerCard';
 import { Pagination } from '@/components/ui/Pagination';
 import { SortSelect } from '@/components/search/SortSelect';
+import { auth } from '@/lib/auth';
 
 interface PageProps {
   searchParams: Promise<{
@@ -59,6 +60,24 @@ export default async function InstallersPage({ searchParams }: PageProps) {
     params.rating_min ||
     params.price_max ||
     params.available;
+
+  // Track search history for authenticated customers
+  const session = await auth();
+  if (session?.user?.role === 'customer' && (params.search || params.service_id || params.city_id)) {
+    // Fire-and-forget POST (don't await, don't block render)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    fetch(`${baseUrl}/api/customers/${session.user.id}/search-history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        search_query: params.search || null,
+        service_category_id: params.service_id ? parseInt(params.service_id) : null,
+        city_id: params.city_id ? parseInt(params.city_id) : null,
+        region_id: params.region_id ? parseInt(params.region_id) : null,
+        results_count: pagination.total,
+      }),
+    }).catch(() => {}); // Silent fail - don't block page render
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

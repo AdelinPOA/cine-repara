@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ReviewList } from '@/components/review/ReviewList';
 import { ReviewForm } from '@/components/review/ReviewForm';
+import { ProfileViewTracker } from '@/components/installer/ProfileViewTracker';
 import { auth } from '@/lib/auth';
 import type { InstallerWithDetails, ServiceCategory, City } from '@/lib/db/schema';
 import { formatCount, formatPriceRange, formatHourlyRate } from '@/lib/utils/format';
@@ -121,6 +122,9 @@ export default async function InstallerProfilePage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Track profile view */}
+      <ProfileViewTracker installerId={installer.id} viewSource="direct" />
+
       {/* Header */}
       <header className="w-full border-b border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-4">
