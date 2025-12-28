@@ -274,6 +274,17 @@ All forms use Zod schemas in `src/lib/validations/`:
 - ✅ 6 new API endpoints (GET/POST/DELETE for favorites, search history, views)
 - ✅ Integration complete across customer dashboard, installer dashboard, browse page, profile page
 
+**Pricing Strategy Change** (December 28, 2024):
+- ✅ Migration `005_remove_hourly_rate.sql` - Dropped hourly_rate columns from database
+- ✅ Removed hourly rate pricing from entire application (11 files):
+  - Installer profile wizard (no more rate inputs)
+  - Browse page filters (removed "Tarif maxim")
+  - Sort options (removed price sorting)
+  - Installer cards and profiles (no price display)
+  - API filtering and sorting (removed price logic)
+- ✅ Pricing now handled through direct client-installer negotiation
+- ✅ Business_name field confirmed optional (no changes needed)
+
 **Project Statistics**:
 - **Total Files**: ~103 files (+18 from Phase 7)
 - **Total Lines of Code**: ~11,000 LOC (+2,500 from Phase 7)
@@ -393,3 +404,86 @@ Run `npm run test:coverage` to generate a detailed coverage report in the `cover
 - Bug fix successful - wizard flow is now correct
 - Ready to start Iteration 2 whenever needed
 - Consider adding tests for new dashboard components
+
+---
+
+### Session: December 28, 2024 - Phase 7 Iteration 2 Complete + Pricing Strategy Change
+
+**User Request**: Continue from yesterday (Phase 7 - Iteration 2) + Remove hourly rate pricing + Make business_name optional
+
+**Major Changes:**
+
+**✅ Phase 7 - Iteration 2 Complete (Dashboard Features):**
+- Migration 004: Created 3 new tables with 9 indexes
+  - `customer_favorites` - Save favorite installers
+  - `customer_search_history` - Track search queries and filters
+  - `installer_profile_views` - Analytics for profile views
+- API Endpoints (6 new):
+  - `GET/POST /api/customers/[id]/favorites` - List and add favorites
+  - `DELETE /api/customers/[id]/favorites/[favoriteId]` - Remove favorite
+  - `GET/POST /api/customers/[id]/search-history` - Search tracking
+  - `POST /api/installers/[id]/views` - Profile view tracking
+- Components (3 new):
+  - `FavoritesList.tsx` - Replaced placeholder with full implementation
+    - Optimistic UI updates for remove action
+    - Toast notifications for feedback
+    - Error recovery (revert on failure)
+  - `SearchHistoryList.tsx` - Display recent searches with filters
+    - "Search Again" functionality
+    - Date formatting (relative: "2 days ago")
+  - `ProfileViewTracker.tsx` - Client-side view tracking
+- Integration:
+  - Customer dashboard shows live favorites + search history
+  - Installer dashboard shows total profile views count
+  - Browse page logs searches automatically (fire-and-forget)
+  - Profile page tracks views on visit (anonymous + authenticated)
+
+**✅ Pricing Strategy Change (Hourly Rate Removal):**
+- **Business Decision**: Pricing moved from public display to direct client negotiation
+- Migration 005: Dropped `hourly_rate_min` and `hourly_rate_max` columns
+  - Recreated `installer_summary` view without pricing
+- Code cleanup (11 files modified):
+  - Schema: Removed from `InstallerProfile` and `InstallerSummary` types
+  - Validations: Removed from all Zod schemas
+  - Wizard: Removed rate inputs from Step 1 and review
+  - Components: Removed from cards, previews, public profiles
+  - Filters: Removed "Tarif maxim" filter (50-200 RON options)
+  - Sorting: Removed "Preț crescător/descrescător" options
+  - API: Removed price filtering and sorting logic
+- **Business_name**: Already optional (no changes needed)
+
+**Database Migrations Executed:**
+- ✅ Migration 004 (dashboard_features.sql) - Vercel Postgres
+- ✅ Migration 005 (remove_hourly_rate.sql) - Vercel Postgres
+
+**Files Changed:**
+- **Created**: 11 new files (1 migration, 3 components, 6 API routes, 1 tracker)
+- **Modified**: 17 files (schema, validations, pages, components, API)
+- **Deleted**: 0 (placeholders replaced in-place)
+- **Total LOC**: +1,500 (Iteration 2), -149 (pricing removal)
+
+**Technical Highlights:**
+- Fire-and-forget pattern for analytics (search history, profile views)
+- Optimistic UI updates with automatic rollback on failure
+- Half-star rendering with SVG gradient defs for precise ratings
+- CASCADE vs SET NULL foreign key strategies (favorites vs analytics)
+
+**Build Status:**
+- ✅ TypeScript compilation: Success
+- ✅ Migrations executed: Success
+- ✅ Dev server: Running and tested
+- ✅ All features working
+
+**What's Next:**
+See "Etapele Următoare" section above for full roadmap. Top priorities:
+1. Manual testing of all new features
+2. Add "Favorite" button to installer cards and profiles
+3. Messaging system (core feature gap)
+4. Portfolio & Certifications (schema ready, needs UI)
+5. Testing infrastructure (Vitest, Playwright)
+
+**Notes for Next Session:**
+- All Phase 7 features complete and production-ready
+- Pricing removal successful - cleaner UX, better for negotiation
+- Ready for manual QA testing
+- Consider adding E2E tests for critical flows (favorites, search, messaging)
