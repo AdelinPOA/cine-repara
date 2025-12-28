@@ -8,7 +8,7 @@ import { ReviewForm } from '@/components/review/ReviewForm';
 import { ProfileViewTracker } from '@/components/installer/ProfileViewTracker';
 import { auth } from '@/lib/auth';
 import type { InstallerWithDetails, ServiceCategory, City } from '@/lib/db/schema';
-import { formatCount, formatPriceRange, formatHourlyRate } from '@/lib/utils/format';
+import { formatCount } from '@/lib/utils/format';
 
 interface PageProps {
   params: Promise<{
@@ -346,28 +346,6 @@ export default async function InstallerProfilePage({ params }: PageProps) {
 
             {/* Right Column */}
             <div className="space-y-6">
-              {/* Pricing */}
-              {(installer.hourly_rate_min || installer.hourly_rate_max) && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Tarif orar</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {installer.hourly_rate_min && installer.hourly_rate_max
-                        ? formatPriceRange(installer.hourly_rate_min, installer.hourly_rate_max)
-                        : installer.hourly_rate_min
-                        ? `de la ${installer.hourly_rate_min} RON`
-                        : `până la ${installer.hourly_rate_max} RON`}{' '}
-                      <span className="text-lg font-normal text-gray-600">/oră</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Tariful poate varia în funcție de complexitatea lucrării
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Service Areas */}
               <Card>
                 <CardHeader>

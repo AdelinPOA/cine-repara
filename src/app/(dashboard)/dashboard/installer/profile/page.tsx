@@ -46,8 +46,6 @@ export default function InstallerProfileWizard() {
     business_name: '',
     bio: '',
     years_experience: '',
-    hourly_rate_min: '',
-    hourly_rate_max: '',
     is_available: true,
     service_category_ids: [] as number[],
     primary_service_id: null as number | null,
@@ -184,8 +182,6 @@ export default function InstallerProfileWizard() {
           business_name: formData.business_name,
           bio: formData.bio,
           years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
-          hourly_rate_min: formData.hourly_rate_min ? parseFloat(formData.hourly_rate_min) : null,
-          hourly_rate_max: formData.hourly_rate_max ? parseFloat(formData.hourly_rate_max) : null,
           is_available: formData.is_available,
           service_category_ids: formData.service_category_ids,
           primary_service_id: formData.primary_service_id,
@@ -341,35 +337,6 @@ export default function InstallerProfileWizard() {
                 placeholder="ex: 10"
                 error={errors.years_experience}
               />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="hourly_rate_min">Tarif orar minim (RON)</Label>
-                <Input
-                  id="hourly_rate_min"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.hourly_rate_min}
-                  onChange={(e) => setFormData({ ...formData, hourly_rate_min: e.target.value })}
-                  placeholder="ex: 50"
-                  error={errors.hourly_rate_min}
-                />
-              </div>
-              <div>
-                <Label htmlFor="hourly_rate_max">Tarif orar maxim (RON)</Label>
-                <Input
-                  id="hourly_rate_max"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.hourly_rate_max}
-                  onChange={(e) => setFormData({ ...formData, hourly_rate_max: e.target.value })}
-                  placeholder="ex: 100"
-                  error={errors.hourly_rate_max}
-                />
-              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
@@ -558,18 +525,6 @@ export default function InstallerProfileWizard() {
                   <div className="flex justify-between">
                     <dt className="text-gray-600">Experiență:</dt>
                     <dd className="font-medium">{formData.years_experience} ani</dd>
-                  </div>
-                )}
-                {(formData.hourly_rate_min || formData.hourly_rate_max) && (
-                  <div className="flex justify-between">
-                    <dt className="text-gray-600">Tarif orar:</dt>
-                    <dd className="font-medium">
-                      {formData.hourly_rate_min && formData.hourly_rate_max
-                        ? `${formData.hourly_rate_min} - ${formData.hourly_rate_max} RON`
-                        : formData.hourly_rate_min
-                        ? `de la ${formData.hourly_rate_min} RON`
-                        : `până la ${formData.hourly_rate_max} RON`}
-                    </dd>
                   </div>
                 )}
               </dl>

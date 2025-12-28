@@ -12,7 +12,6 @@ interface PageProps {
     city_id?: string;
     region_id?: string;
     rating_min?: string;
-    price_max?: string;
     available?: string;
     page?: string;
     sort?: string;
@@ -28,7 +27,6 @@ async function getInstallers(searchParams: Awaited<PageProps['searchParams']>) {
     if (searchParams.city_id) params.set('city_id', searchParams.city_id);
     if (searchParams.region_id) params.set('region_id', searchParams.region_id);
     if (searchParams.rating_min) params.set('rating_min', searchParams.rating_min);
-    if (searchParams.price_max) params.set('price_max', searchParams.price_max);
     if (searchParams.available) params.set('available', searchParams.available);
     if (searchParams.page) params.set('page', searchParams.page);
     if (searchParams.sort) params.set('sort', searchParams.sort);
@@ -58,7 +56,6 @@ export default async function InstallersPage({ searchParams }: PageProps) {
     params.city_id ||
     params.region_id ||
     params.rating_min ||
-    params.price_max ||
     params.available;
 
   // Track search history for authenticated customers

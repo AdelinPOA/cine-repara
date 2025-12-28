@@ -11,11 +11,10 @@ import { sql } from '@/lib/db';
  *   - city_id: Filter by city ID
  *   - region_id: Filter by region ID
  *   - rating_min: Minimum average rating (1-5)
- *   - price_max: Maximum hourly rate
  *   - available: Filter by availability (true/false)
  *   - page: Page number (default: 1)
  *   - limit: Results per page (default: 12, max: 50)
- *   - sort: Sort by (rating, price_asc, price_desc, reviews)
+ *   - sort: Sort by (rating, reviews)
  */
 export async function GET(request: Request) {
   try {
@@ -32,7 +31,6 @@ export async function GET(request: Request) {
     const cityId = searchParams.get('city_id');
     const regionId = searchParams.get('region_id');
     const ratingMin = searchParams.get('rating_min');
-    const priceMax = searchParams.get('price_max');
     const available = searchParams.get('available');
     const sort = searchParams.get('sort') || 'rating';
 
@@ -92,15 +90,6 @@ export async function GET(request: Request) {
       paramIndex++;
     }
 
-    if (priceMax) {
-      conditions.push(`(
-        ip.hourly_rate_max IS NULL OR
-        ip.hourly_rate_max <= $${paramIndex}
-      )`);
-      params.push(parseFloat(priceMax));
-      paramIndex++;
-    }
-
     if (available === 'true') {
       conditions.push('ip.is_available = true');
     }
@@ -110,12 +99,6 @@ export async function GET(request: Request) {
     // Build ORDER BY clause
     let orderBy = 'ORDER BY ';
     switch (sort) {
-      case 'price_asc':
-        orderBy += 'ip.hourly_rate_min ASC NULLS LAST, ip.hourly_rate_max ASC NULLS LAST';
-        break;
-      case 'price_desc':
-        orderBy += 'ip.hourly_rate_max DESC NULLS LAST, ip.hourly_rate_min DESC NULLS LAST';
-        break;
       case 'reviews':
         orderBy += '(SELECT COUNT(*) FROM reviews WHERE installer_profile_id = ip.id) DESC';
         break;

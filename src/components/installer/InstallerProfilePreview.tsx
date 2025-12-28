@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import type { InstallerWithDetails } from '@/lib/db/schema';
-import { formatCurrency } from '@/lib/utils/format';
 
 interface InstallerProfilePreviewProps {
   installer: InstallerWithDetails;
@@ -49,35 +48,20 @@ export function InstallerProfilePreview({ installer }: InstallerProfilePreviewPr
             </div>
           </div>
 
-          {/* Experience & Rate */}
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-            {installer.years_experience && (
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                {installer.years_experience} {installer.years_experience === 1 ? 'an' : 'ani'} experiență
-              </span>
-            )}
-            {installer.hourly_rate_min && installer.hourly_rate_max && (
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {formatCurrency(installer.hourly_rate_min)} - {formatCurrency(installer.hourly_rate_max)}/oră
-              </span>
-            )}
-          </div>
+          {/* Experience */}
+          {installer.years_experience && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              <span>{installer.years_experience} {installer.years_experience === 1 ? 'an' : 'ani'} experiență</span>
+            </div>
+          )}
 
           {/* Bio */}
           {installer.bio && (

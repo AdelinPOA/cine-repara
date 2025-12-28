@@ -28,29 +28,8 @@ export const installerProfileSchema = z.object({
     .max(70, 'Experiența este prea mare')
     .optional()
     .or(z.literal(0)),
-  hourly_rate_min: z
-    .number()
-    .min(0, 'Tariful minim nu poate fi negativ')
-    .optional()
-    .nullable(),
-  hourly_rate_max: z
-    .number()
-    .min(0, 'Tariful maxim nu poate fi negativ')
-    .optional()
-    .nullable(),
   is_available: z.boolean().default(true),
-}).refine(
-  (data) => {
-    if (data.hourly_rate_min && data.hourly_rate_max) {
-      return data.hourly_rate_max >= data.hourly_rate_min;
-    }
-    return true;
-  },
-  {
-    message: 'Tariful maxim trebuie să fie mai mare sau egal cu tariful minim',
-    path: ['hourly_rate_max'],
-  }
-);
+});
 
 export type InstallerProfileInput = z.infer<typeof installerProfileSchema>;
 
@@ -102,8 +81,6 @@ export const completeProfileSchema = z.object({
   business_name: installerProfileSchema.shape.business_name,
   bio: installerProfileSchema.shape.bio,
   years_experience: installerProfileSchema.shape.years_experience,
-  hourly_rate_min: installerProfileSchema.shape.hourly_rate_min,
-  hourly_rate_max: installerProfileSchema.shape.hourly_rate_max,
   is_available: installerProfileSchema.shape.is_available,
 
   // Step 2: Services
@@ -113,17 +90,6 @@ export const completeProfileSchema = z.object({
   // Step 3: Locations
   city_ids: locationSelectionSchema.shape.city_ids,
 }).refine(
-  (data) => {
-    if (data.hourly_rate_min && data.hourly_rate_max) {
-      return data.hourly_rate_max >= data.hourly_rate_min;
-    }
-    return true;
-  },
-  {
-    message: 'Tariful maxim trebuie să fie mai mare sau egal cu tariful minim',
-    path: ['hourly_rate_max'],
-  }
-).refine(
   (data) => {
     if (data.primary_service_id) {
       return data.service_category_ids.includes(data.primary_service_id);

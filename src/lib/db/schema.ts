@@ -83,8 +83,6 @@ export interface InstallerProfile {
   business_name: string | null;
   bio: string | null;
   years_experience: number | null;
-  hourly_rate_min: number | null;
-  hourly_rate_max: number | null;
   is_verified: boolean;
   is_available: boolean;
   profile_completed: boolean;
@@ -256,8 +254,6 @@ export interface InstallerSummary {
   business_name: string | null;
   bio: string | null;
   years_experience: number | null;
-  hourly_rate_min: number | null;
-  hourly_rate_max: number | null;
   is_verified: boolean;
   is_available: boolean;
   profile_completed: boolean;

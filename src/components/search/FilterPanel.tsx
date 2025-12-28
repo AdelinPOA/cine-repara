@@ -11,7 +11,6 @@ export function FilterPanel() {
   const searchParams = useSearchParams();
 
   const [ratingMin, setRatingMin] = useState(searchParams.get('rating_min') || '');
-  const [priceMax, setPriceMax] = useState(searchParams.get('price_max') || '');
   const [available, setAvailable] = useState(searchParams.get('available') === 'true');
 
   const handleApplyFilters = () => {
@@ -21,12 +20,6 @@ export function FilterPanel() {
       params.set('rating_min', ratingMin);
     } else {
       params.delete('rating_min');
-    }
-
-    if (priceMax) {
-      params.set('price_max', priceMax);
-    } else {
-      params.delete('price_max');
     }
 
     if (available) {
@@ -43,19 +36,17 @@ export function FilterPanel() {
 
   const handleClearFilters = () => {
     setRatingMin('');
-    setPriceMax('');
     setAvailable(false);
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete('rating_min');
-    params.delete('price_max');
     params.delete('available');
     params.set('page', '1');
 
     router.push(`/instalatori?${params.toString()}`);
   };
 
-  const hasActiveFilters = ratingMin || priceMax || available;
+  const hasActiveFilters = ratingMin || available;
 
   return (
     <Card>
@@ -93,26 +84,6 @@ export function FilterPanel() {
                     ))}
                     <span className="ml-2 text-sm text-gray-600">și mai mult</span>
                   </div>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Price Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Tarif maxim</h3>
-            <div className="space-y-2">
-              {[50, 100, 150, 200].map((price) => (
-                <label key={price} className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="price"
-                    value={price}
-                    checked={priceMax === String(price)}
-                    onChange={(e) => setPriceMax(e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-sm text-gray-700">Până la {price} RON/oră</span>
                 </label>
               ))}
             </div>

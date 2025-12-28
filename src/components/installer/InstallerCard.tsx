@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import type { InstallerSummary } from '@/lib/db/schema';
 import { generateInstallerSlug } from '@/lib/utils/slugify';
-import { formatCount, formatPriceRange, formatHourlyRate } from '@/lib/utils/format';
+import { formatCount } from '@/lib/utils/format';
 
 interface InstallerCardProps {
   installer: InstallerSummary & {
@@ -120,19 +120,6 @@ export function InstallerCard({ installer }: InstallerCardProps) {
                 {installer.cities.slice(0, 2).map((c) => c.name).join(', ')}
                 {installer.cities.length > 2 && ` +${installer.cities.length - 2}`}
               </span>
-            </div>
-          )}
-
-          {/* Hourly Rate */}
-          {(installer.hourly_rate_min || installer.hourly_rate_max) && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-900">
-                {installer.hourly_rate_min && installer.hourly_rate_max
-                  ? formatPriceRange(installer.hourly_rate_min, installer.hourly_rate_max) + '/oră'
-                  : installer.hourly_rate_min
-                  ? `de la ${formatHourlyRate(installer.hourly_rate_min)}`
-                  : `până la ${formatHourlyRate(installer.hourly_rate_max!)}`}
-              </p>
             </div>
           )}
 

@@ -26,8 +26,6 @@ export function SortSelect() {
         className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="rating">Rating (descrescător)</option>
-        <option value="price_asc">Preț (crescător)</option>
-        <option value="price_desc">Preț (descrescător)</option>
         <option value="reviews">Recenzii (descrescător)</option>
       </select>
     </div>
