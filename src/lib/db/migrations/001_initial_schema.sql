@@ -282,18 +282,7 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 -- CONSTRAINTS AND VALIDATION
 -- =====================================================
 
--- Ensure installers can only review if they're customers
-ALTER TABLE reviews ADD CONSTRAINT check_customer_role
-CHECK (
-  EXISTS (
-    SELECT 1 FROM users WHERE id = customer_id AND role = 'customer'
-  )
-);
-
--- Ensure installer profile is only for installers
-ALTER TABLE installer_profiles ADD CONSTRAINT check_installer_role
-CHECK (
-  EXISTS (
-    SELECT 1 FROM users WHERE id = user_id AND role = 'installer'
-  )
-);
+-- Note: Role validation is handled at the application level
+-- CHECK constraints with subqueries are not supported in PostgreSQL
+-- Foreign keys ensure referential integrity
+-- Application logic ensures role constraints are enforced

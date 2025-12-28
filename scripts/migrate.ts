@@ -3,6 +3,11 @@
  * Run with: npx tsx scripts/migrate.ts
  */
 
+// Load environment variables from .env.local
+import { config } from 'dotenv';
+import { resolve } from 'path';
+config({ path: resolve(__dirname, '../.env.local') });
+
 import { sql } from '@/lib/db';
 import { readFileSync } from 'fs';
 import { join } from 'path';

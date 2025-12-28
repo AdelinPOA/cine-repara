@@ -15,11 +15,20 @@ export async function GET(
   try {
     const { id: installerId } = await params;
 
-    // Get installer summary
-    const installerResult = await sql<InstallerWithDetails>`
+    // Get installer summary - support both id and user_id lookups
+    // Try by id first, then by user_id for compatibility
+    let installerResult = await sql<InstallerWithDetails>`
       SELECT * FROM installer_summary
       WHERE id = ${installerId}
     `;
+
+    // If not found by id, try by user_id
+    if (installerResult.rowCount === 0) {
+      installerResult = await sql<InstallerWithDetails>`
+        SELECT * FROM installer_summary
+        WHERE user_id = ${installerId}
+      `;
+    }
 
     if (installerResult.rowCount === 0) {
       return NextResponse.json(
@@ -29,6 +38,7 @@ export async function GET(
     }
 
     const installer = installerResult.rows[0];
+    const installerProfileId = installer.id; // Use the actual installer_profile.id
 
     // Get services
     const servicesResult = await sql`
@@ -41,7 +51,7 @@ export async function GET(
         ins.is_primary
       FROM installer_services ins
       JOIN service_categories sc ON ins.service_category_id = sc.id
-      WHERE ins.installer_profile_id = ${installerId}
+      WHERE ins.installer_profile_id = ${installerProfileId}
       ORDER BY ins.is_primary DESC, sc.name_ro ASC
     `;
 
@@ -56,7 +66,7 @@ export async function GET(
       FROM installer_service_areas isa
       JOIN cities c ON isa.city_id = c.id
       JOIN regions r ON c.region_id = r.id
-      WHERE isa.installer_profile_id = ${installerId}
+      WHERE isa.installer_profile_id = ${installerProfileId}
       ORDER BY c.name ASC
     `;
 
@@ -64,7 +74,7 @@ export async function GET(
     const certificationsResult = await sql`
       SELECT *
       FROM installer_certifications
-      WHERE installer_profile_id = ${installerId}
+      WHERE installer_profile_id = ${installerProfileId}
       ORDER BY issue_date DESC NULLS LAST
     `;
 
@@ -72,7 +82,7 @@ export async function GET(
     const portfolioResult = await sql`
       SELECT *
       FROM portfolio_images
-      WHERE installer_profile_id = ${installerId}
+      WHERE installer_profile_id = ${installerProfileId}
       ORDER BY display_order ASC, created_at DESC
     `;
 
