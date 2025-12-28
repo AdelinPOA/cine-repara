@@ -4,15 +4,24 @@ import { Badge } from '@/components/ui/Badge';
 import type { InstallerSummary } from '@/lib/db/schema';
 import { generateInstallerSlug } from '@/lib/utils/slugify';
 import { formatCount } from '@/lib/utils/format';
+import { FavoriteButton } from '@/components/favorite/FavoriteButton';
 
 interface InstallerCardProps {
   installer: InstallerSummary & {
     services?: Array<{ id: number; name_ro: string; is_primary?: boolean }>;
     cities?: Array<{ id: number; name: string }>;
   };
+  customerId?: string;
+  initialIsFavorite?: boolean;
+  initialFavoriteId?: string | null;
 }
 
-export function InstallerCard({ installer }: InstallerCardProps) {
+export function InstallerCard({
+  installer,
+  customerId,
+  initialIsFavorite,
+  initialFavoriteId
+}: InstallerCardProps) {
   // Generate slug for the installer
   const primaryCity = installer.cities?.[0]?.name || 'Romania';
   const slug = generateInstallerSlug(
@@ -22,9 +31,24 @@ export function InstallerCard({ installer }: InstallerCardProps) {
   );
 
   return (
-    <Link href={`/instalatori/${slug}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-        <CardContent className="p-6">
+    <div className="relative">
+      {/* Favorite Button - Absolute positioned */}
+      {customerId && (
+        <div className="absolute top-4 right-4 z-10">
+          <FavoriteButton
+            installerProfileId={installer.id}
+            initialIsFavorite={initialIsFavorite ?? false}
+            initialFavoriteId={initialFavoriteId ?? null}
+            customerId={customerId}
+            variant="icon"
+          />
+        </div>
+      )}
+
+      {/* Clickable Card */}
+      <Link href={`/instalatori/${slug}`}>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+          <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-1">
@@ -132,5 +156,6 @@ export function InstallerCard({ installer }: InstallerCardProps) {
         </CardContent>
       </Card>
     </Link>
+    </div>
   );
 }

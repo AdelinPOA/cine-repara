@@ -4,6 +4,7 @@ import { InstallerCard } from '@/components/installer/InstallerCard';
 import { Pagination } from '@/components/ui/Pagination';
 import { SortSelect } from '@/components/search/SortSelect';
 import { auth } from '@/lib/auth';
+import { getInstallers } from '@/lib/queries/getInstallers';
 
 interface PageProps {
   searchParams: Promise<{
@@ -16,35 +17,6 @@ interface PageProps {
     page?: string;
     sort?: string;
   }>;
-}
-
-async function getInstallers(searchParams: Awaited<PageProps['searchParams']>) {
-  try {
-    const params = new URLSearchParams();
-
-    if (searchParams.search) params.set('search', searchParams.search);
-    if (searchParams.service_id) params.set('service_id', searchParams.service_id);
-    if (searchParams.city_id) params.set('city_id', searchParams.city_id);
-    if (searchParams.region_id) params.set('region_id', searchParams.region_id);
-    if (searchParams.rating_min) params.set('rating_min', searchParams.rating_min);
-    if (searchParams.available) params.set('available', searchParams.available);
-    if (searchParams.page) params.set('page', searchParams.page);
-    if (searchParams.sort) params.set('sort', searchParams.sort);
-
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/installers?${params.toString()}`, {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      return { data: [], pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } };
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching installers:', error);
-    return { data: [], pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } };
-  }
 }
 
 export default async function InstallersPage({ searchParams }: PageProps) {
@@ -74,6 +46,27 @@ export default async function InstallersPage({ searchParams }: PageProps) {
         results_count: pagination.total,
       }),
     }).catch(() => {}); // Silent fail - don't block page render
+  }
+
+  // Fetch favorites for authenticated customers
+  let favoritesMap = new Map<string, number>(); // installerProfileId -> favoriteId
+  if (session?.user.role === 'customer') {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const favoritesRes = await fetch(
+        `${baseUrl}/api/customers/${session.user.id}/favorites?limit=1000`,
+        { cache: 'no-store' }
+      );
+      if (favoritesRes.ok) {
+        const data = await favoritesRes.json();
+        favoritesMap = new Map(
+          data.data.map((f: any) => [f.installer_profile_id, f.id])
+        );
+      }
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+      // Continue without favorites - button will work but show incorrect initial state
+    }
   }
 
   return (
@@ -129,7 +122,13 @@ export default async function InstallersPage({ searchParams }: PageProps) {
               <>
                 <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
                   {installers.map((installer: any) => (
-                    <InstallerCard key={installer.id} installer={installer} />
+                    <InstallerCard
+                      key={installer.id}
+                      installer={installer}
+                      customerId={session?.user.role === 'customer' ? session.user.id : undefined}
+                      initialIsFavorite={favoritesMap.has(installer.id)}
+                      initialFavoriteId={favoritesMap.get(installer.id)?.toString() ?? null}
+                    />
                   ))}
                 </div>
 

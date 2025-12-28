@@ -154,8 +154,6 @@ export async function PATCH(
         business_name,
         bio,
         years_experience,
-        hourly_rate_min,
-        hourly_rate_max,
         is_available,
         service_category_ids,
         primary_service_id,
@@ -168,8 +166,6 @@ export async function PATCH(
           business_name,
           bio,
           years_experience,
-          hourly_rate_min,
-          hourly_rate_max,
           is_available,
         });
 
@@ -179,8 +175,6 @@ export async function PATCH(
             business_name = ${profileData.business_name || null},
             bio = ${profileData.bio || null},
             years_experience = ${profileData.years_experience || null},
-            hourly_rate_min = ${profileData.hourly_rate_min || null},
-            hourly_rate_max = ${profileData.hourly_rate_max || null},
             is_available = ${profileData.is_available},
             profile_completed = true,
             updated_at = CURRENT_TIMESTAMP

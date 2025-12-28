@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ReviewList } from '@/components/review/ReviewList';
 import { ReviewForm } from '@/components/review/ReviewForm';
 import { ProfileViewTracker } from '@/components/installer/ProfileViewTracker';
+import { FavoriteButton } from '@/components/favorite/FavoriteButton';
 import { auth } from '@/lib/auth';
 import type { InstallerWithDetails, ServiceCategory, City } from '@/lib/db/schema';
 import { formatCount } from '@/lib/utils/format';
@@ -119,6 +120,30 @@ export default async function InstallerProfilePage({ params }: PageProps) {
     session?.user &&
     session.user.role === 'customer' &&
     session.user.id !== installer.user_id;
+
+  // Check if installer is in user's favorites
+  let isFavorite = false;
+  let favoriteId: string | null = null;
+  if (session?.user.role === 'customer') {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const favoritesRes = await fetch(
+        `${baseUrl}/api/customers/${session.user.id}/favorites?limit=1000`,
+        { cache: 'no-store' }
+      );
+      if (favoritesRes.ok) {
+        const data = await favoritesRes.json();
+        const favorite = data.data.find(
+          (f: any) => f.installer_profile_id === installer.id
+        );
+        isFavorite = !!favorite;
+        favoriteId = favorite?.id?.toString() ?? null;
+      }
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+      // Continue without favorite state
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -254,7 +279,18 @@ export default async function InstallerProfilePage({ params }: PageProps) {
               )}
 
               {/* Contact Info */}
-              <div className="flex items-center gap-4 pt-6 border-t border-gray-200">
+              <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-200">
+                {/* Favorite Button */}
+                {session?.user.role === 'customer' && (
+                  <FavoriteButton
+                    installerProfileId={installer.id}
+                    initialIsFavorite={isFavorite}
+                    initialFavoriteId={favoriteId}
+                    customerId={session.user.id}
+                    variant="full"
+                  />
+                )}
+
                 {installer.phone && (
                   <a
                     href={`tel:${installer.phone}`}

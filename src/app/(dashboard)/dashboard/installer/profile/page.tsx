@@ -186,6 +186,7 @@ export default function InstallerProfileWizard() {
           service_category_ids: formData.service_category_ids,
           primary_service_id: formData.primary_service_id,
           city_ids: formData.city_ids,
+          profile_completed: true,
         }),
       });
 

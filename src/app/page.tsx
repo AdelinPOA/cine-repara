@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { HomeSearchBar } from '@/components/search/HomeSearchBar';
+import { auth } from '@/lib/auth';
+import { LogoutButton } from '@/components/auth/LogoutButton';
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
@@ -10,15 +13,44 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-blue-600">Cine Repara</h1>
           <div className="flex items-center space-x-4">
-            <Link href="/login">
-              <Button variant="ghost">Conectare</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Înregistrare</Button>
-            </Link>
+            {session?.user ? (
+              <>
+                <Link href={`/dashboard/${session.user.role}`}>
+                  <Button variant="ghost">Dashboard</Button>
+                </Link>
+                <LogoutButton />
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost">Conectare</Button>
+                </Link>
+                <Link href="/register">
+                  <Button>Înregistrare</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
+
+      {/* Welcome Banner - Only for authenticated users */}
+      {session?.user && (
+        <div className="w-full bg-blue-50 border-b border-blue-100">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <p className="text-blue-900 font-medium">
+              {session.user.name
+                ? `Bine ai revenit, ${session.user.name}!`
+                : 'Bine ai revenit!'}
+            </p>
+            <Link href={`/dashboard/${session.user.role}`}>
+              <Button variant="ghost" size="sm" className="text-blue-700 hover:bg-blue-100">
+                Mergi la Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">
