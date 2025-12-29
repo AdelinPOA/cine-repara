@@ -6,6 +6,7 @@ import { registerSchema, type RegisterInput } from '@/lib/validations/auth';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/lib/auth';
 import type { UserRole } from '@/lib/db/schema';
+import { checkRateLimit, getResetTime } from '@/lib/auth/ratelimit';
 
 /**
  * Server action to register a new user
@@ -15,6 +16,23 @@ export async function registerUser(data: RegisterInput) {
   try {
     // Validate input
     const validatedData = registerSchema.parse(data);
+
+    // Rate limiting: Prevent registration spam and automated account creation
+    // Check before database queries to minimize resources used by attackers
+    const isAllowed = checkRateLimit(
+      `register_${validatedData.email}`,
+      5,
+      15 * 60 * 1000
+    ); // 5 attempts per 15 minutes
+
+    if (!isAllowed) {
+      const resetTime = getResetTime(`register_${validatedData.email}`);
+      const minutesRemaining = resetTime ? Math.ceil(resetTime / 60000) : 15;
+
+      return {
+        error: `Prea multe încercări de înregistrare. Vă rugăm să încercați din nou în ${minutesRemaining} minute.`,
+      };
+    }
 
     // Check if user already exists
     const existingUser = await sql`

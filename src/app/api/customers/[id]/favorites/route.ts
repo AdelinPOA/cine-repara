@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { addFavoriteSchema } from '@/lib/validations/favorites';
 import type { CustomerFavoriteWithInstaller } from '@/lib/db/schema';
 
 /**
@@ -134,14 +135,22 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { installer_profile_id } = body;
 
-    if (!installer_profile_id) {
+    // Validate input with Zod schema
+    const validation = addFavoriteSchema.safeParse(body);
+
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, error: 'installer_profile_id is required' },
+        {
+          success: false,
+          error: 'Invalid request data',
+          details: validation.error.issues,
+        },
         { status: 400 }
       );
     }
+
+    const { installer_profile_id } = validation.data;
 
     // Verify installer exists and profile is completed
     const installerResult = await sql`

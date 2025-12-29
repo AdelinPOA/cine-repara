@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { searchHistorySchema } from '@/lib/validations/search';
 import type { CustomerSearchHistoryWithDetails } from '@/lib/db/schema';
 
 /**
@@ -122,21 +123,28 @@ export async function POST(
     }
 
     const body = await request.json();
-    const {
-      search_query = null,
-      service_category_id = null,
-      city_id = null,
-      region_id = null,
-      results_count = 0,
-    } = body;
 
-    // At least one search parameter must be provided
-    if (!search_query && !service_category_id && !city_id && !region_id) {
+    // Validate input with Zod schema
+    const validation = searchHistorySchema.safeParse(body);
+
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, error: 'At least one search parameter is required' },
+        {
+          success: false,
+          error: 'Invalid search history data',
+          details: validation.error.issues,
+        },
         { status: 400 }
       );
     }
+
+    const {
+      search_query,
+      service_category_id,
+      city_id,
+      region_id,
+      results_count,
+    } = validation.data;
 
     // Insert search history
     const result = await sql`
